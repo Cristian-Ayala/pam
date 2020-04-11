@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="circleSize">75dp</dimen>
+    <dimen name="marginCircle">0dp</dimen>
+    <dimen name="tamanioLetras">25dp</dimen>
+</resources>
