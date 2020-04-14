@@ -2,5 +2,7 @@
 <resources>
     <dimen name="circleSize">75dp</dimen>
     <dimen name="marginCircle">0dp</dimen>
-    <dimen name="tamanioLetras">25dp</dimen>
+    <dimen name="tamanioLetras">25sp</dimen>
+    <dimen name="paddingButtons">5dp</dimen>
+    <dimen name="sizeScreen">235dp</dimen>
 </resources>

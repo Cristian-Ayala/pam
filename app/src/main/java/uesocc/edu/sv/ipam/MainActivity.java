@@ -1,40 +1,66 @@
 package uesocc.edu.sv.ipam;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActionBar;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PrimitiveIterator;
-
-import org.mozilla.javascript.Parser;
 import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.ast.ExpressionStatement;
 
 public class MainActivity extends AppCompatActivity {
     Button btnCero, btnUno, btnDos, btnTres, btnCuatro, btnCinco, btnSeis, btnSiete, btnOcho, btnNueve;
     Button btnSuma, btnMultiplica, btnClean, btnBorrar, btnPunto, btnIgual;
-    ImageButton btnResta, btnDivide, btnRaiz, btnCuadrado;
+    ImageButton btnResta, btnDivide, btnRaiz, btnCuadrado, modalOff;
     TextView Resultado, Ops;
-
-    double resultado;
     String operador, mostrar, reserva;
-
+    LinearLayout modalOn;
+    LayoutInflater layoutInflater;
+    View layout;
+    PopupWindow popupWindow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        layout = layoutInflater.inflate(R.layout.modal, null);
+        popupWindow = new PopupWindow(layout, ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT);
+        modalOn = (LinearLayout) findViewById(R.id.modal);
+        modalOn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.showAtLocation(v, Gravity.CENTER, 0, 0);
+            }
+        });
+
+
+
+        modalOn.post(new Runnable(){
+            @Override
+            public void run() {
+                modalOn.performClick();
+            }
+        });
+//        popupWindow.showAtLocation(this.findViewById(R.id.Cuadrado), Gravity.CENTER, 0, 0);
+//        popupWindow.showAtLocation(getWindow().findViewById(android.R.id.button3), Gravity.CENTER, 0, 0);
+        modalOff = (ImageButton) layout.findViewById(R.id.modalShow);
+        modalOff.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                popupWindow.dismiss();
+            }
+        });
+
 
         btnCero = (Button) findViewById(R.id.Cero);
         btnUno = (Button) findViewById(R.id.Uno);
@@ -66,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 mostrar = Resultado.getText().toString();
                 mostrar = mostrar + "0";
                 Resultado.setText(mostrar);
+                procesar();
             }
         });
 
@@ -75,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
                 mostrar = Resultado.getText().toString();
                 mostrar = mostrar + "1";
                 Resultado.setText(mostrar);
+                procesar();
             }
         });
 
@@ -84,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
                 mostrar = Resultado.getText().toString();
                 mostrar = mostrar + "2";
                 Resultado.setText(mostrar);
+                procesar();
             }
         });
 
@@ -93,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 mostrar = Resultado.getText().toString();
                 mostrar = mostrar + "3";
                 Resultado.setText(mostrar);
+                procesar();
             }
         });
 
@@ -102,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 mostrar = Resultado.getText().toString();
                 mostrar = mostrar + "4";
                 Resultado.setText(mostrar);
+                procesar();
             }
         });
 
@@ -110,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 mostrar = Resultado.getText().toString();
                 mostrar = mostrar + "5";
                 Resultado.setText(mostrar);
+                procesar();
             }
         });
 
@@ -118,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
                 mostrar = Resultado.getText().toString();
                 mostrar = mostrar + "6";
                 Resultado.setText(mostrar);
+                procesar();
             }
         });
 
@@ -126,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
                 mostrar = Resultado.getText().toString();
                 mostrar = mostrar + "7";
                 Resultado.setText(mostrar);
+                procesar();
             }
         });
 
@@ -134,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
                 mostrar = Resultado.getText().toString();
                 mostrar = mostrar + "8";
                 Resultado.setText(mostrar);
+                procesar();
             }
         });
 
@@ -142,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
                 mostrar = Resultado.getText().toString();
                 mostrar = mostrar + "9";
                 Resultado.setText(mostrar);
+                procesar();
             }
         });
 
@@ -207,22 +243,30 @@ public class MainActivity extends AppCompatActivity {
 
         btnIgual.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                org.mozilla.javascript.Context rhino = org.mozilla.javascript.Context.enter();
-                // turn off optimization to work with android
-                rhino.setOptimizationLevel(-1);
-                String res = Resultado.getText().toString().replaceAll("(-?\\d+(?:\\.\\d+)?)\\^(-?\\d+(?:\\.\\d+)?)", "Math.pow($1,$2)");
-
-                try {
-                    ScriptableObject scope = rhino.initStandardObjects();
-                    String result = rhino.evaluateString(scope, res, "JavaScript", 1, null).toString();
-                    Ops.setText(String.valueOf(result));
-
-                } finally {
-                    org.mozilla.javascript.Context.exit();
-                    Resultado.setText("");
-                }
+                procesar();
+                Resultado.setText("");
             }
         });
 
+    }
+
+    public void procesar(){
+        if (!"".equals(Resultado.getText().toString().trim())) {
+            org.mozilla.javascript.Context rhino = org.mozilla.javascript.Context.enter();
+            // turn off optimization to work with android
+            rhino.setOptimizationLevel(-1);
+            String res = Resultado.getText().toString().replaceAll("(-?\\d+(?:\\.\\d+)?)\\^(-?\\d+(?:\\.\\d+)?)", "Math.pow($1,$2)");
+
+            try {
+                ScriptableObject scope = rhino.initStandardObjects();
+                String result = rhino.evaluateString(scope, res, "JavaScript", 1, null).toString();
+                Ops.setText(String.valueOf(result));
+
+            } catch (Exception e) {
+
+            } finally {
+                org.mozilla.javascript.Context.exit();
+            }
+        }
     }
 }
